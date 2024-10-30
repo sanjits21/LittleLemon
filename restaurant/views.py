@@ -1,38 +1,59 @@
-# from django.http import HttpResponse
 from django.shortcuts import render
-from .forms import BookingForm
-from .models import Menu
-
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import permissions
+from .models import *
+from .serializers import *
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
-def home(request):
-    return render(request, 'index.html')
+# class UserViewSet(ModelViewSet):
+#    queryset = User.objects.all()
+#    serializer_class = UserSerializer
+#    permission_classes = [permissions.IsAuthenticated] 
 
-def about(request):
-    return render(request, 'about.html')
+class MenuItemView(ListCreateAPIView):
+    # permission_classes = [IsAuthenticated]
+    queryset = Menu.objects.all()
+    serializer_class = MenuSerializer
 
-def book(request):
-    form = BookingForm()
-    if request.method == 'POST':
-        form = BookingForm(request.POST)
-        if form.is_valid():
-            form.save()
-    context = {'form':form}
-    return render(request, 'book.html', context)
-
-# Add your code here to create new views
-
-#Menu Function
-def menu(request):
-    menu_data = Menu.objects.all()
-    menu_data = menu_data.order_by('price')
-    main_data = {"menu": menu_data}
-    return render(request, 'menu.html', {"menu": main_data})
+class MenuDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = Menu.objects.all()
+    serializer_class = MenuSerializer
 
 
-def display_menu_item(request, pk=None): 
-    if pk: 
-        menu_item = Menu.objects.get(pk=pk) 
-    else: 
-        menu_item = "" 
-    return render(request, 'menu_item.html', {"menu_item": menu_item}) 
+class BookingViewset(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
+
+
+
+
+# class BookingView(APIView):
+#     def get(self, request):
+#         items = Booking.objects.all()
+#         serializer = BookingSerializer(items, many=True)
+#         return Response(serializer.data)
+    
+#     def post(self, request):
+#         item = request.data.get('item')
+#         serializer = BookingSerializer(data=item)
+#         if serializer.is_valid(raise_exception=True):
+#             item_saved = serializer.save()
+#         return Response({"success": "Booking '{}' created successfully".format(item_saved.name)})
+    
+
+# class MenuView(APIView):
+#     def get(self, request):
+#         items = Menu.objects.all()
+#         serializer = MenuSerializer(items, many=True)
+#         return Response(serializer.data)
+    
+#     def post(self, request):
+#         serializer = MenuSerializer(data=request.data)
+#         if serializer.is_valid(raise_exception=True):
+#             item_saved = serializer.save()
+#         return Response({"success": "Menu '{}' created successfully".format(item_saved.title)})

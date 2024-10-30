@@ -1,12 +1,10 @@
-from django.urls import path, re_path
-from . import views
-from django.conf import settings
-from django.conf.urls.static import static
+from django.urls import path
+from rest_framework.authtoken.views import obtain_auth_token
+from .views import *
 
 urlpatterns = [
-    path('', views.home, name="home"),
-    path('about/', views.about, name="about"),
-    path('book/', views.book, name="book"), 
-    path('menu/', views.menu, name="menu"),
-    path('menu_item/<int:pk>/', views.display_menu_item, name="menu_item"),
+    path('menu/',MenuItemView.as_view(), name='menu'),
+    path('menu/<int:pk>',MenuDetailView.as_view(), name='menu-item'),
+    # path('booking',BookingView.as_view(), name='booking')
+    path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
 ]
